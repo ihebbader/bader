@@ -1,0 +1,20 @@
+<app-leftmenu></app-leftmenu>
+
+<div class="page">
+  <app-header></app-header>
+  <div class="mt-5">
+<form-builder [form]="json11" (change)="onChange($event)"></form-builder>
+<hr/>
+<h3 class="text-center text-muted">As JSON Schema</h3>
+<div class="well jsonviewer">
+  <pre id="json"><code class="language-json" #json></code></pre>
+</div>
+<h3 class="text-center text-muted">As Rendered Form</h3>
+<div class="well jsonviewer" >
+  <formio   [form]='json11'></formio>
+<!--  <input  type="{{formFromDataBase[0].inputType}}">-->
+</div>
+    <button (click)="getDataModel()">bader</button>
+  </div>
+
+</div>

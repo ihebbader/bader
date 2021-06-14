@@ -1,0 +1,695 @@
+<app-leftmenu></app-leftmenu>
+<!-- Main body part  -->
+<div class="page">
+    <app-header></app-header>
+    <div class="section-body">
+        <div class="container-fluid">
+            <div class="d-md-flex justify-content-between align-items-center">
+                <ul class="nav nav-tabs page-header-tab">
+                    <li class="nav-item"><a class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                            href="javascript:void(0)" (click)="onTab('1')" [ngClass]="{'active': dplistTab}">Liste des
+                    flux de travail</a>
+                    </li>
+                    <li *ngIf="Details" class="nav-item"><a *ngIf="CurrentlyFlow" class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                            href="javascript:void(0)" (click)="onTab('2')" [ngClass]="{'active': dpgridTab}">Liste
+                    des entités pour le flux {{CurrentlyFlow.dataModelName}}</a></li>
+
+                </ul>
+                <div class="header-action d-flex">
+
+                    <button *ngIf="!Details" type="button" class="btn btn-primary mt-3" (click)="openModal(template)"><i
+                            class="fe fe-plus mr-2"></i>Ajouter une nouvelle flux de travail</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="section-body">
+        <div class="container-fluid">
+            <div class="tab-content taskboard">
+                <div class="tab-pane fade" [ngClass]="{'show active': dplistTab}" id="TaskBoard-list" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-vcenter mb-0 table_custom spacing8 text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>#ID</th>
+                                    <th>WORKFLOW</th>
+                                    <th>GROUPE</th>
+                                    <th>PERIODE</th>
+                                    <th>Action</th>
+                                    <th class="w200"></th>
+                                </tr>
+                            </thead>
+                            <tbody *ngIf="workflowList" >
+                                <tr  *ngFor="let w of workflowList" (click)="entityDetails(w)">
+                                  <td > <div *ngIf="w.id<10 ; else elseBlock">0{{w.id}}</div>
+                                    <ng-template #elseBlock>{{w.id}}</ng-template></td>
+                                <td>
+                                        <h6 class="mb-0">{{w.dataModelName}}</h6>
+                                        <span>{{w.dataModelDescrip}}</span>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled team-info mb-0">
+                                            <li><img src="../assets/images/xs/avatar1.jpg" tooltip="Avatar"
+                                                    data-placement="top" title="Avatar" alt="Avatar"></li>
+                                            <li><img src="../assets/images/xs/avatar2.jpg" tooltip="Avatar"
+                                                    data-placement="top" title="Avatar" alt="Avatar"></li>
+                                            <li><img src="../assets/images/xs/avatar5.jpg" tooltip="Avatar"
+                                                    data-placement="top" title="Avatar" alt="Avatar"></li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <div class="text-info">Début: {{w.startDate | date}}</div>
+                                        <div class="text-pink">Fin: {{w.endDate | date}}</div>
+                                    </td>
+                                    <td>
+                                        <span class="tag tag-blue">Commence Bientot</span>
+                                    </td>
+                                    <td>
+                                        <div class="clearfix">
+                                            <div class="float-left"><strong>0%</strong></div>
+                                            <div class="float-right"><small class="text-muted">Progress</small></div>
+                                        </div>
+                                        <div class="progress progress-xs">
+                                            <div class="progress-bar bg-azure" role="progressbar" style="width: 0%"
+                                                aria-valuenow="42" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" [ngClass]="{'show active': dpgridTab}" id="TaskBoard-grid" role="tabpanel">
+                    <div class="row clearfix" cdkDropListGroup>
+                        <div class="col-lg-12 col-md-12" *ngIf="CurrentlyFlow">
+                            <div class="card planned_task" *ngIf="cardremove1" [ngClass]="{'card-fullscreen': isFull1}"
+                                [ngClass]="{'card-collapsed': !isCollapsed, '': isCollapsed}">
+                                <div class="card-header">
+                                    <h3 class="card-title">{{CurrentlyFlow.dataModelName}}</h3>
+                                    <div class="card-options">
+                                      <button type="button" class="btn btn-primary mr-2" (click)="openModal1(templateUpdate)" >Modifier ce flux</button>
+                                      <button type="button" (click)="Delete()" class="btn btn-danger " >Supprimer ce flux</button>
+                                    </div>
+                                </div>
+                                <div class="card-body" id="collapseBasic" [collapse]="isCollapsed">
+                                    <div class="dd" data-plugin="nestable">
+                                        <ol class="dd-list">
+                                            <li class="dd-item" cdkDropList [cdkDropListData]="todo"
+                                                (cdkDropListDropped)="drop($event)">
+                                                <div class="dd-handle" *ngFor="let e of CurrentlyFlow.entity" cdkDrag>
+                                                    <h6>{{e.entityModelName}}</h6>
+                                                    <span class="time"><span class="text-primary">{{e.entityModelDescrip}}</span>
+                                                        <br>De {{e.startDate | date}} jusqu'a {{e.endDate | date}}<br>
+                                                        <span class="text-danger">Ordre : {{e.etapeOrd}}</span></span>
+                                                     <span class="text-danger">Etat : {{e.etat}}</span>
+                                                    <p></p>
+                                                    <ul class="list-unstyled team-info">
+                                                        <li><img src="../assets/images/xs/avatar1.jpg" tooltip="Avatar"
+                                                                data-placement="top" title="Avatar" alt="Avatar"></li>
+                                                        <li><img src="../assets/images/xs/avatar2.jpg" tooltip="Avatar"
+                                                                data-placement="top" title="Avatar" alt="Avatar"></li>
+                                                        <li><img src="../assets/images/xs/avatar5.jpg" tooltip="Avatar"
+                                                                data-placement="top" title="Avatar" alt="Avatar"></li>
+                                                    </ul>
+                                                      <div class="align-right mt-3">
+                                                  <button type="button" class="btn btn-primary mr-2" (click)="updateEntity(UpdateEntity,e)" >Modifier cette étape</button>
+                                                  <button type="button" (click)="DeleteEntity(e)" class="btn btn-danger " >Supprimer cette étape</button>
+                                                      </div>
+                                                  </div>
+                                            </li>
+
+                                        </ol>
+                                    </div>
+                                </div>
+                              <div class="card-body" (click)="openModal2(CreateEntity)" id="collapseBasic" [collapse]="isCollapsed">
+                                <div class="dd" data-plugin="nestable">
+                                  <ol class="dd-list">
+                                    <li class="dd-item" cdkDropList [cdkDropListData]="todo"
+                                        (cdkDropListDropped)="drop($event)">
+                                      <div class="dd-handle"  cdkDrag>
+                                        <h6 class="text-center">Ajouter une nouvelle étape</h6>
+                                        <span class="time"><span class="text-primary"></span>
+                                                        <br>
+                                          <span class="text-danger"></span></span>
+                                        <p></p>
+                                      </div>
+                                    </li>
+
+                                  </ol>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #template>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Ajouter une nouvelle flux de travail</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">Fermer</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class=" clearfix">
+          <form [formGroup]="editForm" >
+            <div class="col-12">
+                <div class="form-group">
+                    <input type="text" name="dataModelName" formControlName="dataModelName" class="form-control" placeholder="Entrer le nom de flux de travail">
+                  <small class="form-text text-danger"
+                         *ngIf="editForm.get('dataModelName')?.errors?.required">
+                    Ce champs est obligatoire
+                  </small>
+                  <small class="form-text text-danger"
+                         *ngIf="editForm.get('dataModelName')?.errors?.minlength">
+                    ce champs doit avoir au minimum 3 caractéres
+                  </small>
+                  <small class="form-text text-danger"
+                         *ngIf="editForm.get('dataModelName')?.errors?.maxlength">
+                    Vous avez dépasser la taille maximale de ce champs
+                  </small>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                  <textarea type="text" formControlName="dataModelDescrip" class="form-control" rows="5" cols="35" placeholder="Saisir la discription de ce flux de travail"></textarea>
+                  <small class="form-text text-danger"
+                         *ngIf="editForm.get('dataModelDescrip')?.errors?.required">
+                    Ce champs est obligatoire
+                  </small>
+                  <small class="form-text text-danger"
+                         *ngIf="editForm.get('dataModelDescrip')?.errors?.minlength">
+                    ce champs doit avoir au minimum 3 caractéres
+                  </small>
+                  <small class="form-text text-danger"
+                         *ngIf="editForm.get('dataModelDescrip')?.errors?.maxlength">
+                    Vous avez dépasser la taille maximale de ce champs
+                  </small>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                  <label for="start"> Date de début</label>
+                    <input id="start" type="date" formControlName="start" class="form-control" value="2021-03-02" min="2021-03-01" max="2030-12-31">
+                  <small class="form-text text-danger"
+                         *ngIf="editForm.get('start')?.errors?.required">
+                    Ce champs est obligatoire
+                  </small>
+                </div>
+            </div>
+            <div *ngIf="messageDateVisibility" class="alert alert-danger" role="alert">
+             {{messageDate}}
+            </div>
+          <div class="col-12">
+            <div class="form-group">
+              <label for="start"> Date Fin</label>
+              <input type="date" class="form-control" formControlName="end" value="2021-03-02" min="2021-03-01" max="2030-12-31">
+              <small class="form-text text-danger"
+                     *ngIf="editForm.get('end')?.errors?.required">
+                Ce champs est obligatoire
+              </small>
+            </div>
+          </div>
+          </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" (click)="onAdd()" class="btn btn-primary">Ajouter</button>
+        <button type="button" class="btn btn-default" (click)="modalRef.hide()">Fermer</button>
+    </div>
+</ng-template>
+<ng-template #templateUpdate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Modifier le flux de travail || #ID:{{CurrentlyFlow.id}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">Fermer</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class=" ">
+      <form  [formGroup]="editFormUpdate">
+        <div class="col-12">
+          <div class="form-group">
+            <input type="text" name="dataModelName" formControlName="dataModelName" class="form-control" placeholder="Entrer le nom de flux de travail">
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <textarea type="text" formControlName="dataModelDescrip" class="form-control" rows="5" cols="35" placeholder="Saisir la discription de ce flux de travail"></textarea>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <label for="start"> Date de début</label>
+            <input id="start" type="date" formControlName="start" class="form-control" >
+            <small class="form-text alert-success">
+              Date Anciens : {{this.CurrentlyFlow.startDate | date}}
+            </small>
+          </div>
+        </div>
+        <div *ngIf="messageDateVisibility" class="alert alert-danger" role="alert">
+          {{messageDate}}
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <label for="start"> Date Fin</label>
+            <input type="date" class="form-control" formControlName="end" value="2021/03/02" min="2021-03-01" max="2030-12-31">
+            <small class="form-text alert-success">
+              Date Anciens : {{this.CurrentlyFlow.endDate | date }}
+            </small>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" (click)="onClickUpdate()" class="btn btn-primary">Mettre a jour</button>
+    <button type="button" class="btn btn-default" (click)="modalRef.hide()">Fermer</button>
+  </div>
+</ng-template>
+<ng-template class="page" #CreateEntity>
+
+      <div class="section-body">
+        <div class="container-fluid">
+          <div class="d-md-flex justify-content-between align-items-center">
+            <ul class="nav nav-tabs page-header-tab">
+              <li class="nav-item"><a class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                                      href="javascript:void(0)"  [ngClass]="{'active': tab1}">Information générale</a>
+              </li>
+              <li class="nav-item" ><a  class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                                                      href="javascript:void(0)"  [ngClass]="{'active': tab2}">Acteurs</a></li>
+              <li class="nav-item"><a class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                                      href="javascript:void(0)"  [ngClass]="{'active': tab3}">Création
+              de formulaire</a>
+              </li>
+              <li class="nav-item"><a class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                                      href="javascript:void(0)" [ngClass]="{'active': tab4}">
+                Notification
+              </a>
+              </li>
+            </ul>
+
+        </div>
+      </div>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="alertebool" class="alert alert-danger" role="alert">
+    {{messageAlerte}}
+    </div>
+  <div class="tab-pane fade" *ngIf="tab1inter" [ngClass]="{'show active': tab1}" id="add-grid" role="tabpanel">
+
+        <form [formGroup]="EntityForm">
+            <div class="form-group">
+              <label for="start"> Nom</label>
+              <input type="text" name="EntityModelName" formControlName="EntityModelName" class="form-control" placeholder="Nom de flux..">
+              <small class="form-text text-danger"
+                     *ngIf="EntityForm.get('EntityModelName')?.errors?.minlength">
+                Ce champs est obligatoire
+              </small>
+              <small class="form-text text-danger"
+                     *ngIf="EntityForm.get('EntityModelName')?.errors?.maxlength">
+                Ce champs est obligatoire
+              </small>
+          </div>
+          <div class="col-12">
+            <div class="form-group">
+              <label for="start"> Description</label>
+              <textarea type="text" formControlName="EntityModelDescrip" class="form-control" rows="5" cols="35" placeholder="Description de flux.."></textarea>
+              <small class="form-text text-danger"
+                     *ngIf="EntityForm.get('EntityModelDescrip')?.errors?.minlength">
+                Ce champs est obligatoire
+              </small>
+
+              <small class="form-text text-danger"
+                     *ngIf="EntityForm.get('EntityModelDescrip')?.errors?.maxlength">
+                Ce champs est obligatoire
+              </small>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="form-group">
+              <label for="start"> Date de début</label>
+              <input id="start" type="date" formControlName="startDate" class="form-control" >
+            </div>
+          </div>
+          <div *ngIf="messageDateVisibility" class="alert alert-danger" role="alert">
+            {{messageDate}}
+          </div>
+          <div *ngIf="messageVerifyDateFlowAndEntity" class="alert alert-danger" role="alert">
+            {{messageVerifyDateFlowAndEntityAlert}}
+          </div>
+          <div class="col-12">
+            <div class="form-group">
+              <label for="start"> Date Fin</label>
+              <input type="date" class="form-control" formControlName="endDate" value="2021/03/02" min="2021-03-01" max="2030-12-31">
+            </div>
+          </div>
+          <div *ngIf="messageVerifyDateFlowAndEntityEnd" class="alert alert-danger" role="alert">
+            {{messageVerifyDateFlowAndEntityAlert}}
+          </div>
+          <div class="form-group ">
+              <label for="delai"> Délai d'execution</label>
+               <input type="number" name="delai" id="delai" formControlName="DelaiDexecutionEnHeure" class="form-control mb-2" placeholder="Nombre">
+              <select  name="seleteds" class="custom-select mb-3">
+                <option value="username">Heures</option>
+                <option value="email">Jours</option>
+              </select>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" (click)="getEtape2()"  class="btn btn-primary">suivant</button>
+            <button type="button" class="btn btn-default align-right" (click)="modalRef.hide()">annuler</button>
+          </div>
+        </form>
+
+
+  </div>
+  <div class="tab-pane fade" *ngIf="tab2inter"  [ngClass]="{'show active': tab2}" id="add-grid" role="tabpanel">
+    <div class="alert alert-warning mb-5" role="alert">
+      {{message}}
+    </div>
+      <div class="form-check form-check-inline mr-3">
+        <input class="form-check-input" [checked]="checkedUSER" (click)="checkedUser()" type="checkbox" id="inlineCheckbox1" value="option1" >
+        <label class="form-check-label" for="inlineCheckbox1">Role utilisateur</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" [checked]="checkedGroupe" (click)="chekedGroup()" type="checkbox" id="inlineCheckbox2"  value="option2">
+        <label class="form-check-label"  for="inlineCheckbox2">Groupe Utilisateur</label>
+      </div>
+
+    <div *ngIf="checkedUSER" class="mt-5">
+      <label>Selectionner des utilisateurs :</label>
+    <ng-multiselect-dropdown
+      class="mb-15"
+      [placeholder]="'Selectionner les utilisateur'"
+      [settings]="dropdownSettings"
+      [data]="dropdownList"
+      [(ngModel)]="selectedItems"
+      (onSelect)="onItemSelect($event)"
+      (onSelectAll)="onSelectAll($event)">
+    </ng-multiselect-dropdown>
+
+
+    </div>
+    <div class="modal-footer mt-15">
+      <button type="submit" (click)="getEtape3()"  class="btn btn-primary">suivant</button>
+      <button type="button" class="btn btn-default align-right" (click)="onTab1(1)">Retourner</button>
+    </div>
+  </div>
+    <div  class="tab-pane fade " *ngIf="tab3inter" [ngClass]="{'show active': tab3}" id="add-grid" role="tabpanel">
+      <div class="alert alert-warning mb-5" role="alert">
+        Vueillez remplir le formulaire
+      </div>
+
+      <form-builder style="overflow: scroll" [form]="form" (change)="onChange($event)"
+      ></form-builder>
+
+      <div class="modal-footer mt-15">
+        <button type="submit" (click)="onTab1(4)"  class="btn btn-primary">suivant</button>
+        <button type="button" class="btn btn-default align-right" (click)="onTab1(2)">Retourner</button>
+      </div>
+    </div>
+    <div class="tab-pane fade" *ngIf="tab4"  [ngClass]="{'show active': tab4}" id="add-grid" role="tabpanel">
+      <div class="mt-15" >
+        <table class="table table-hover table-striped table-vcenter mb-0">
+          <thead>
+          <tr class="">
+            <th colspan="2">Liste des notifications</th>
+            <th colspan="2"><button  class="btn btn-primary text-center mb-2" (click)="setNotificationForm()"> Ajouter une nouvelle notification</button></th>
+          </tr>
+          <tr class="bg-gray">
+
+            <th>ID</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Message</th>
+
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let notification of NewEntity.notification">
+            <td><a href="#">{{notification.id}}</a></td>
+            <td><span>{{notification.role}}</span></td>
+            <td><span class="tag tag-default">{{notification.status}}</span></td>
+            <td><span>{{notification.message}}</span></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="NotifacationForm" class="mt-5">
+        <form [formGroup]="NotForm">
+          <div class="form-group ">
+            <label for="delai"> Role utilisateur</label>
+            <select  name="seleteds" class="custom-select mb-3" formControlName="role">
+              <option value="Employée">Employée</option>
+              <option value="Administarateur">Administarateur</option>
+              <option value="Les utilisateurs de cette étape">Les utilisateurs de cette étape</option>
+            </select>
+          </div>
+          <div class="form-group ">
+            <label for="delai"> Status</label>
+            <select  name="seleteds" class="custom-select mb-3" formControlName="status">
+              <option value="Nouveau">Nouveau</option>
+              <option value="En cours">En cours</option>
+              <option value="En attente">En attente</option>
+              <option value="Fermé">Fermé</option>
+            </select>
+          </div>
+          <div class="form-group ">
+            <label> Message</label>
+          <textarea type="text" formControlName="message" class="form-control" rows="5" cols="35" placeholder="Ecrire votre message ici ..."></textarea>
+          </div>
+          <button  class="btn btn-primary text-center mb-2" (click)="onNotificationClick()"> Ajouter</button>
+        </form>
+      </div>
+      <div class="modal-footer mt-15">
+        <button type="submit" (click)="finish()"  class="btn btn-primary">Ternminer</button>
+        <button type="button" class="btn btn-default align-right" (click)="modalRef.hide()">annuler</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- update entity -->
+<ng-template #UpdateEntity>
+  <div class="section-body">
+    <div class="container-fluid">
+      <div class="d-md-flex justify-content-between align-items-center">
+        <ul class="nav nav-tabs page-header-tab">
+          <li class="nav-item"><a class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                                  href="javascript:void(0)"  (click)="onTab3(1)" [ngClass]="{'active': tab11}">
+            Information générale</a>
+          </li>
+          <li class="nav-item" ><a  class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                                    href="javascript:void(0)" (click)="onTab3(2)" [ngClass]="{'active': tab22}">Consulter ou modifier les acteurs </a></li>
+          <li class="nav-item"><a class="nav-link" id="TaskBoard-tab" data-toggle="tab" (click)="onTab3(3)"
+                                  href="javascript:void(0)"  [ngClass]="{'active': tab33}">Consulter ou modifier
+          le formulaire</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" id="TaskBoard-tab" data-toggle="tab"
+                                (click)="onTab3(4)"  href="javascript:void(0)" [ngClass]="{'active': tab44}">
+            Notification
+          </a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+  <div class="tab-pane fade" *ngIf="tab11" [ngClass]="{'show active': tab11}" id="add-grid" role="tabpanel">
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Modifier l'étape || #ID:{{CurrentlyEntity.id}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">Fermer</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class=" ">
+      <form  [formGroup]="UpdateFormEntity">
+        <div class="col-12">
+          <div class="form-group">
+            <input type="text" name="entityModelName" formControlName="entityModelName" class="form-control" placeholder="Entrer le nom de cette étape">
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <textarea type="text" formControlName="entityModelDescrip" class="form-control" rows="5" cols="35" placeholder="Saisir la discription de cette étape"></textarea>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <label for="start"> Date de début</label>
+            <input id="start" type="date" formControlName="start" class="form-control" >
+            <small class="form-text alert-success">
+              <i class="fa fa-exclamation-circle" aria-hidden="true"></i> Date Anciens : {{this.CurrentlyEntity.startDate | date}}
+            </small>
+          </div>
+        </div>
+        <div *ngIf="messageVerifyDateFlowAndEntity" class="alert alert-danger" role="alert">
+          {{messageVerifyDateFlowAndEntityAlert}}
+        </div>
+        <div class="col-12">
+          <div class="form-group">
+            <label for="start"> Date Fin</label>
+            <input type="date" class="form-control" formControlName="end">
+            <small class="form-text alert-success">
+              <i class="fa fa-exclamation-circle" aria-hidden="true"></i> Date Anciens : {{this.CurrentlyEntity.endDate | date}}
+            </small>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" (click)="UpdateGeneraleIformation()" class="btn btn-primary">Terminer</button>
+    <button type="button" class="btn btn-default" (click)="modalRef.hide()">Annuler</button>
+  </div>
+  </div>
+  <div class="tab-pane fade" *ngIf="tab22" [ngClass]="{'show active': tab22}" id="add-grid" role="tabpanel">
+    <div *ngIf="alerte" class="alert alert-warning" role="alert">
+      {{alerte}}
+    </div>
+    <div class="table-responsive" >
+      <table class="table table-hover table-striped table-vcenter mb-0">
+        <thead>
+        <tr>
+          <th colspan="8">Liste des utilisateur</th>
+        </tr>
+        <tr class="bg-gray">
+          <th class="w30">&nbsp;</th>
+          <th>ID</th>
+          <th>Nom et Prenom</th>
+          <th>Username</th>
+          <th>email</th>
+          <th>Numéro de téléphone</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of CurrentlyEntity.user">
+          <td>
+            <label class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input"
+                     name="example-checkbox1" value="option1" checked="">
+              <span class="custom-control-label">&nbsp;</span>
+            </label>
+          </td>
+          <td><a href="#">{{user.id}}</a></td>
+          <td><span>{{user.nom}} {{user.prenom}}</span></td>
+          <td><span class="tag tag-default">{{user.username}}</span></td>
+          <td><span>{{user.email}}</span></td>
+          <td><span>{{user.numTel}}</span></td>
+
+        </tr>
+        </tbody>
+      </table>
+      <button type="submit" *ngIf="AddNewUserFoem" (click)="AddNewUser()" class="btn btn-primary ml-50 mt-5 mb-25 align-right">Ajouter une nouvelle utilisateur</button>
+    </div>
+    <div *ngIf="!AddNewUserFoem" class="mt-5 mb-5">
+      <ng-multiselect-dropdown
+        class="mt-5 "
+        [placeholder]="'Selectionner les utilisateur'"
+        [settings]="dropdownSettings"
+        [data]="dropdownList"
+        [(ngModel)]="selectedItems"
+        (onSelect)="onItemSelect($event)"
+        (onSelectAll)="onSelectAll($event)">
+      </ng-multiselect-dropdown>
+       </div>
+    <div class="modal-footer">
+      <button type="submit" (click)="onClickAddNewUser()" class="btn btn-primary">Terminer</button>
+      <button type="button" class="btn btn-default" (click)="modalRef.hide()">Annuler</button>
+    </div>
+  </div>
+  <div class="tab-pane fade" *ngIf="tab33" [ngClass]="{'show active': tab33}" id="add-grid" role="tabpanel">
+  <div class="card mt-5 mb-5">
+    <div class="card-title ">
+      <h2 >&nbsp;&nbsp;&nbsp;Consulter l'entité formulaire</h2>
+    </div>
+    <div class="card-body">
+    <formio [form]='json11' ></formio>
+  </div>
+
+  </div>
+    <div class="modal-footer">
+      <button type="submit" (click)="openFormUpdate(updateForm)" class="btn btn-primary ">Modifier ce formulaire</button>
+      <button type="submit" (click)="onClickUpdate()" class="btn btn-primary">Suivant</button>
+      <button type="button" class="btn btn-default" (click)="modalRef.hide()">Annuler</button>
+    </div>
+    </div>
+
+  <div class="tab-pane fade" *ngIf="tab44" [ngClass]="{'show active': tab44}" id="add-grid" role="tabpanel">
+
+    <div *ngIf="NotificationForm1" class="table-responsive">
+      <table class="table table-hover table-striped table-vcenter mb-0">
+        <thead>
+        <tr class="">
+          <th colspan="2">Liste des notifications</th>
+          <th colspan="2"><button  class="btn btn-primary text-center mb-2" (click)="addNewNotificationUpdate()"> Ajouter une nouvelle notification</button></th>
+        </tr>
+        <tr class="bg-gray">
+
+          <th>ID</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Message</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let notification of CurrentlyEntity.notification">
+          <td><a href="#">{{notification.id}}</a></td>
+          <td><span>{{notification.role}}</span></td>
+          <td><span class="tag tag-default">{{notification.status}}</span></td>
+          <td><span>{{notification.message}}</span></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="!NotificationForm1" class="mt-5">
+      <form [formGroup]="NotForm">
+        <div class="form-group ">
+          <label for="delai"> Role utilisateur</label>
+          <select  name="seleteds" class="custom-select mb-3" formControlName="role">
+            <option value="Employée">Employée</option>
+            <option value="Administarateur">Administarateur</option>
+            <option value="Les utilisateurs de cette étape">Les utilisateurs de cette étape</option>
+          </select>
+        </div>
+        <div class="form-group ">
+          <label for="delai"> Status</label>
+          <select  name="seleteds" class="custom-select mb-3" formControlName="status">
+            <option value="Nouveau">Nouveau</option>
+            <option value="En cours">En cours</option>
+            <option value="En attente">En attente</option>
+            <option value="Fermé">Fermé</option>
+          </select>
+        </div>
+        <div class="form-group ">
+          <label> Message</label>
+          <textarea type="text" formControlName="message" class="form-control" rows="5" cols="35" placeholder="Ecrire votre message ici ..."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" (click)="onClickUpdate()" class="btn btn-primary">Suivant</button>
+      <button type="button" class="btn btn-default" (click)="modalRef.hide()">Annuler</button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #updateForm class="modal">
+  <div class="modal-body overflow-scroll">
+  <form-builder class="mt-5 mb-5" [form]="json11" (change)="onChangeUpdate($event)"></form-builder>
+  </div>
+    <div class="modal-footer">
+  <button type="submit"  class="btn btn-primary mt-5" (click)="onClickFormEntity()">Terminer</button>
+  </div>
+</ng-template>
